@@ -1,12 +1,21 @@
+import os
+import sys
+
 import uvicorn
 from fastapi import HTTPException
 
-from utils.logger import logger
-
 
 async def _run_server():
+    # Get Config Path
+    config_dir_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config'))
+
+    # Add To PATH Config Dir
+    sys.path.append(config_dir_path)
+
+    from config.logger import logger
+
     try:
-        from test_app import test_main_route
+        from config.test_app import test_main_route
 
         await test_main_route()
         logger.info("The application test has been successfully executed")
