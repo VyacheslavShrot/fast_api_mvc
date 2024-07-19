@@ -9,6 +9,12 @@ __pycache__/
 # Idea
 .idea
 
+# MySQL Db Data
+/db_data/
+
+# Alembic Versions
+/alembic/versions/
+
 # Distribution / packaging
 .Python
 build/
