@@ -16,7 +16,6 @@ env.read_env()
 # access to the values within the .ini file in use.
 config = context.config
 
-# DATABASE_URL = f"mysql+aiomysql://{env('MYSQL_USER')}:{env('MYSQL_PASSWORD')}@localhost:3306/{env('MYSQL_DATABASE')}"
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Interpret the config file for Python logging.
