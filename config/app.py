@@ -1,13 +1,32 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from sqlalchemy import Select, Result
 from sqlalchemy.future import select
+from starlette.responses import JSONResponse
 
+from apis.user_apis import users_router
 from config.database import database, async_session
-from config.models import users
+from config.models import User
 
 # Create Web APP FastAPI
 app: FastAPI = FastAPI(
     title="Fast API MVC"
 )
+
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(
+        request: Request,
+        exc: HTTPException
+) -> JSONResponse:
+    """
+    Custom HTTPException Response
+    """
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": exc.detail
+        }
+    )
 
 
 @app.on_event("startup")
@@ -42,6 +61,13 @@ async def db_status_users():
     Just for DB Status of Checking Successful Created Database and Users Table
     """
     async with async_session() as session:
-        query = select(users)
-        result = await session.execute(query)
+        # Get Users
+        query: Select = select(User)
+
+        # Execute Query
+        result: Result = await session.execute(query)
         return result.scalars().all()
+
+
+# Register Routers
+app.include_router(users_router)
