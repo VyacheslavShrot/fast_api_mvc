@@ -6,7 +6,8 @@ from environs import Env
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from config.models import metadata
+from config.database import DATABASE_URL
+from config.models import Base
 
 env = Env()
 env.read_env()
@@ -15,7 +16,7 @@ env.read_env()
 # access to the values within the .ini file in use.
 config = context.config
 
-DATABASE_URL = f"mysql+aiomysql://{env('MYSQL_USER')}:{env('MYSQL_PASSWORD')}@localhost:3306/{env('MYSQL_DATABASE')}"
+# DATABASE_URL = f"mysql+aiomysql://{env('MYSQL_USER')}:{env('MYSQL_PASSWORD')}@localhost:3306/{env('MYSQL_DATABASE')}"
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Interpret the config file for Python logging.
@@ -27,7 +28,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = metadata
+target_metadata = Base.metadata
 
 
 # other values from the config, defined by the needs of env.py,
