@@ -1,11 +1,9 @@
 from fastapi import FastAPI, HTTPException, Request
-from sqlalchemy import Select, Result
-from sqlalchemy.future import select
+from sqlalchemy import text, CursorResult
 from starlette.responses import JSONResponse
 
 from apis.user_apis import users_router
 from config.database import database, async_session
-from config.models import User
 
 # Create Web APP FastAPI
 app: FastAPI = FastAPI(
@@ -55,18 +53,20 @@ async def app_status():
     }
 
 
-@app.get("/db/status/users", response_model=list[dict])
-async def db_status_users():
+@app.get("/db-status")
+async def db_status():
     """
-    Just for DB Status of Checking Successful Created Database and Users Table
+    Just for DB Status of Checking Successful Working with DB
     """
     async with async_session() as session:
-        # Get Users
-        query: Select = select(User)
-
-        # Execute Query
-        result: Result = await session.execute(query)
-        return result.scalars().all()
+        # Perform a Simple Query to Check Database Connection
+        result: CursorResult = await session.execute(text("SELECT 1"))
+        return JSONResponse(
+            {
+                "result": result.scalar()
+            },
+            status_code=200
+        )
 
 
 # Register Routers
