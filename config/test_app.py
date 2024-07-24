@@ -22,5 +22,5 @@ async def test_db_route():
     """
     Test for DB
     """
-    response = client.get("/db/status/users")
+    response = client.get("/db-status")
     assert response.status_code == 200
