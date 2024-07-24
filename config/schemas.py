@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr, field_validator
 from config.validators_exception import ValidationError
 
 
-class SignUp(BaseModel):
+class SignUpOrLogin(BaseModel):
     email: EmailStr
     password: str
 
