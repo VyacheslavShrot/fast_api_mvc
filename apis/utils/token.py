@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import jwt
+from fastapi import Header, Depends
 
 from config.database import env
 
@@ -50,7 +51,7 @@ def create_access_token(
 
 def decode_access_token(
         token: str
-) -> dict:
+) -> dict | bool:
     """
     Decode JWT Access Token
     """
@@ -61,4 +62,35 @@ def decode_access_token(
             algorithms=[ALGORITHM]
         )
     except jwt.PyJWTError:
-        raise ValueError("Invalid Token")
+        return False
+
+
+def get_token_from_header(
+        authorization: str = Header(None)
+) -> str | bool:
+    """
+    Get Token from Header like Bearer
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        return False
+    return authorization.split(" ")[1]
+
+
+def get_current_user_email(
+        token: str | bool = Depends(get_token_from_header)
+) -> str | bool:
+    """
+    Get Current User Email by JWT Token
+    """
+    if not token:
+        return False
+
+    # Decode Token
+    decoded_token: dict | bool = decode_access_token(token)
+    if not decoded_token:
+        return False
+
+    # Get User Email from Token
+    user_email: str = decoded_token["user_email"]
+
+    return user_email
