@@ -41,3 +41,29 @@ class SignUpOrLogin(BaseModel):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>_]', value):
             raise ValidationError("Password must contain at least one special character")
         return value
+
+
+class PostAdd(BaseModel):
+    text: str
+
+    @field_validator("text")
+    def text_validator(
+            cls,
+            value: str
+    ) -> str | ValueError:
+        """
+        Check Input Text
+        """
+        # If Payload Large than 1 MB
+        if len(value.encode('utf-8')) > 1 * 1024 * 1024:
+            raise ValidationError('Payload Too Large')
+
+        # Only allow letters, numbers, spaces, and common punctuation
+        if not re.match("^[a-zA-Z0-9\s.,!?]*$", value):
+            raise ValidationError("Text Contains Invalid Characters")
+
+        # Minimum 5 Words
+        if len(value.split()) < 5:
+            raise ValidationError("Text must contain at least 5 words")
+
+        return value
