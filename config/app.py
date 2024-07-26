@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from sqlalchemy import text, CursorResult
 from starlette.responses import JSONResponse
 
+from apis.posts_apis import posts_router
 from apis.user_apis import users_router
 from config.database import database, async_session
 
@@ -71,3 +72,4 @@ async def db_status():
 
 # Register Routers
 app.include_router(users_router)
+app.include_router(posts_router)
