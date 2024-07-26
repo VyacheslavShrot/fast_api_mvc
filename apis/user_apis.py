@@ -29,7 +29,7 @@ async def signup(
             # Execute Query
             result: Result = await session.execute(query)
 
-            existing_user: Row = result.scalars().first()
+            existing_user: User = result.scalars().first()
             if existing_user:
                 return JSONResponse(
                     {
