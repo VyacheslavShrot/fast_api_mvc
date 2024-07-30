@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi.responses import JSONResponse
-from sqlalchemy import Select, Result, Row
+from sqlalchemy import Select, Result
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from apis.utils.token import get_current_user_email
 from config.database import async_session
@@ -68,6 +69,55 @@ async def add_post(
         return JSONResponse(
             {
                 "error": f"An error occurred while add post | {e}"
+            },
+            status_code=500
+        )
+
+
+@posts_router.get("/posts")
+async def get_posts(
+        current_user_email: str | bool = Depends(get_current_user_email)
+) -> JSONResponse:
+    """
+    Get ALL User Posts API with Auth Token Requireid and Caching Response
+    """
+    try:
+        async with async_session() as session:
+            if not current_user_email:
+                return JSONResponse(
+                    {
+                        "error": "invalid Token"
+                    },
+                    status_code=401
+                )
+
+            # Get User with Email from Token
+            query: Select = select(User).filter_by(email=current_user_email).options(selectinload(User.posts))
+
+            # Execute Query
+            result: Result = await session.execute(query)
+
+            user: User = result.scalars().first()
+
+            return JSONResponse(
+                {
+                    "success": True,
+                    "posts": [
+                        {
+                            "id": post.id,
+                            "user_email": post.user.email,
+                            "text": post.text
+                        }
+                        for post in user.posts
+                    ]
+                },
+                status_code=200
+            )
+    except Exception as e:
+        logger.error(f"An error occurred while get posts | {e}")
+        return JSONResponse(
+            {
+                "error": f"An error occurred while get posts | {e}"
             },
             status_code=500
         )
