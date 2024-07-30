@@ -40,6 +40,13 @@ async def add_post(
             result: Result = await session.execute(query)
 
             user: User = result.scalars().first()
+            if not user:
+                return JSONResponse(
+                    {
+                        "error": "Don't Exist Such User with Such Email"
+                    },
+                    status_code=401
+                )
 
             # Create Post
             post: Post = Post(
@@ -98,6 +105,13 @@ async def get_posts(
             result: Result = await session.execute(query)
 
             user: User = result.scalars().first()
+            if not user:
+                return JSONResponse(
+                    {
+                        "error": "Don't Exist Such User with Such Email"
+                    },
+                    status_code=401
+                )
 
             return JSONResponse(
                 {
