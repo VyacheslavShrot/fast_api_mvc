@@ -10,8 +10,8 @@ services:
       - .env
     ports:
       - "8080:8080"
-#    volumes:
-#      - .:/fast_api_mvc
+    volumes:
+      - .:/fast_api_mvc
 
   db:
     image: mysql:8.0
