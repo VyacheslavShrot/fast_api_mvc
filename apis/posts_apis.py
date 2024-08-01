@@ -5,6 +5,7 @@ from sqlalchemy import Select, Result
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
+from apis.utils.cache import get_and_add_user_posts_into_cache
 from apis.utils.token import get_current_user_email
 from config.database import async_session
 from config.logger import logger
@@ -60,6 +61,12 @@ async def add_post(
             # Save User into DB
             await session.commit()
 
+            # If Cache is Exist -> Add New Post into Cache Posts List
+            await get_and_add_user_posts_into_cache(
+                post=post,
+                user_email=current_user_email
+            )
+
             return JSONResponse(
                 {
                     "success": True,
@@ -98,32 +105,49 @@ async def get_posts(
                     status_code=401
                 )
 
-            # Get User with Email from Token
-            query: Select = select(User).filter_by(email=current_user_email).options(selectinload(User.posts))
+            # Get Cached Posts
+            cached_posts: list[dict] | None = await get_and_add_user_posts_into_cache(
+                user_email=current_user_email
+            )
+            if not cached_posts:
+                # Get User with Email from Token
+                query: Select = select(User).filter_by(email=current_user_email).options(selectinload(User.posts))
 
-            # Execute Query
-            result: Result = await session.execute(query)
+                # Execute Query
+                result: Result = await session.execute(query)
 
-            user: User = result.scalars().first()
-            if not user:
-                return JSONResponse(
+                user: User = result.scalars().first()
+                if not user:
+                    return JSONResponse(
+                        {
+                            "error": "Don't Exist Such User with Such Email"
+                        },
+                        status_code=401
+                    )
+
+                # Get ALL User Posts
+                user_posts: list[Post] = user.posts
+
+                # Format Response
+                posts: list[dict] = [
                     {
-                        "error": "Don't Exist Such User with Such Email"
-                    },
-                    status_code=401
+                        "id": post.id,
+                        "user_email": post.user.email,
+                        "text": post.text
+                    }
+                    for post in user_posts
+                ]
+
+                # Add User Posts into Cache
+                await get_and_add_user_posts_into_cache(
+                    post=posts,
+                    user_email=current_user_email
                 )
 
             return JSONResponse(
                 {
                     "success": True,
-                    "posts": [
-                        {
-                            "id": post.id,
-                            "user_email": post.user.email,
-                            "text": post.text
-                        }
-                        for post in user.posts
-                    ]
+                    "posts": cached_posts if cached_posts else posts
                 },
                 status_code=200
             )
