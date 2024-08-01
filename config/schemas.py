@@ -67,3 +67,21 @@ class PostAdd(BaseModel):
             raise ValidationError("Text must contain at least 5 words")
 
         return value
+
+
+class PostDelete(BaseModel):
+    post_id: int
+
+    @field_validator("post_id", mode="before")
+    def post_id_validator(
+            cls,
+            value: str
+    ) -> int | ValidationError:
+        """
+        Check Input Post Id
+        """
+
+        if not isinstance(value, int):
+            raise ValidationError("Post Id Can be Only Integer")
+
+        return value
