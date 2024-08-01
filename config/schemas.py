@@ -72,7 +72,7 @@ class PostAdd(BaseModel):
 class PostDelete(BaseModel):
     post_id: int
 
-    @field_validator("post_id", mode="before")
+    @field_validator("post_id", mode="before")  # Mode Before -> Call Validator Before Pydantic Format Data
     def post_id_validator(
             cls,
             value: str
