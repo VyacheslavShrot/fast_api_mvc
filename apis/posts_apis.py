@@ -3,10 +3,9 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy import Select, Result
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
 from apis.utils.cache import get_and_add_user_posts_into_cache, delete_post_from_cache
-from apis.utils.token import get_current_user_email
+from apis.utils.token import get_current_user_email, get_current_user
 from config.database import async_session
 from config.logger import logger
 from config.models import User, Post
@@ -34,13 +33,11 @@ async def add_post(
                     status_code=401
                 )
 
-            # Get User with Email from Token
-            query: Select = select(User).filter_by(email=current_user_email)
-
-            # Execute Query
-            result: Result = await session.execute(query)
-
-            user: User = result.scalars().first()
+            # Get Current User Object
+            user: User = await get_current_user(
+                session=session,
+                current_user_email=current_user_email
+            )
             if not user:
                 return JSONResponse(
                     {
@@ -110,13 +107,11 @@ async def get_posts(
                 user_email=current_user_email
             )
             if not cached_posts:
-                # Get User with Email from Token
-                query: Select = select(User).filter_by(email=current_user_email).options(selectinload(User.posts))
-
-                # Execute Query
-                result: Result = await session.execute(query)
-
-                user: User = result.scalars().first()
+                # Get Current User Object
+                user: User = await get_current_user(
+                    session=session,
+                    current_user_email=current_user_email
+                )
                 if not user:
                     return JSONResponse(
                         {
@@ -179,13 +174,11 @@ async def delete_post(
                     status_code=401
                 )
 
-            # Get User with Email from Token
-            query: Select = select(User).filter_by(email=current_user_email).options(selectinload(User.posts))
-
-            # Execute Query
-            result: Result = await session.execute(query)
-
-            user: User = result.scalars().first()
+            # Get Current User Object
+            user: User = await get_current_user(
+                session=session,
+                current_user_email=current_user_email
+            )
             if not user:
                 return JSONResponse(
                     {

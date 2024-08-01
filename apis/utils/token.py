@@ -1,9 +1,14 @@
 from datetime import datetime, timedelta
 
 import jwt
-from fastapi import Header, Depends
+from fastapi import Depends
+from fastapi import Header
+from sqlalchemy import Select, Result
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload, sessionmaker
 
 from config.database import env
+from config.models import User
 
 # JWT Conf
 SECRET_KEY = env("JWT_SECRET_KEY")
@@ -94,3 +99,22 @@ def get_current_user_email(
     user_email: str = decoded_token["user_email"]
 
     return user_email
+
+
+async def get_current_user(
+        session,
+        current_user_email: str
+) -> User:
+    """
+    Get Current User Object with Database Async Session and PreLoad User Posts
+    """
+
+    # Get User with Email from Token
+    query: Select = select(User).filter_by(email=current_user_email).options(selectinload(User.posts))
+
+    # Execute Query
+    result: Result = await session.execute(query)
+
+    user: User = result.scalars().first()
+
+    return user
