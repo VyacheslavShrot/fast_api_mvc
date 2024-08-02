@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: vyacheslavshrot/fast_api_mvc:latest
+    build: .
     depends_on:
       - db
     env_file:
