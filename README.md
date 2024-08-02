@@ -1,5 +1,12 @@
 # FastAPI MVC [![CI/CD](https://github.com/VyacheslavShrot/fast_api_mvc/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/VyacheslavShrot/fast_api_mvc/actions/workflows/ci_cd.yml)  ![Pulls](https://img.shields.io/docker/pulls/vyacheslavshrot/fast_api_mvc)
 
+- I have described in detail how to use the APIs of this project in the <strong>Postman documentation</strong> :
+    - <strong>https://documenter.getpostman.com/view/26500283/2sA3rwMDsG </strong><br><br>
+
+- Also in the image on my <strong>Docker Hub</strong> is always the latest version of the code using the <strong>GitHub CD</strong> :
+    - <strong>https://hub.docker.com/r/vyacheslavshrot/fast_api_mvc </strong>
+
+
 ### STRUCTURE
 
 - <strong>Application Config</strong>
