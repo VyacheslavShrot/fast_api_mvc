@@ -49,7 +49,7 @@
 - Copy this repository to your system
 
 ```
-git clone https://github.com/VyacheslavShrot/fast_api_mvc.git
+git clone --branch prod https://github.com/VyacheslavShrot/fast_api_mvc.git
 ```
 
 - Create an .env file at the project level
