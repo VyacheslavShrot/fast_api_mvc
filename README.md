@@ -1,5 +1,7 @@
 # FastAPI MVC [![CI/CD](https://github.com/VyacheslavShrot/fast_api_mvc/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/VyacheslavShrot/fast_api_mvc/actions/workflows/ci_cd.yml)  ![Pulls](https://img.shields.io/docker/pulls/vyacheslavshrot/fast_api_mvc)
 
+- A regular Fast API project with JWT token based users and their MySQL based posts using SQLAlchemy ORM, Alembic migrations and Pydantic validation. And all this on asynchronous code with aiocache.
+
 - I have described in detail how to use the APIs of this project in the <strong>Postman documentation</strong> :
     - <strong>https://documenter.getpostman.com/view/26500283/2sA3rwMDsG </strong><br><br>
 
